@@ -20,6 +20,9 @@ type Action =
   | {
       type: 'skip_tour';
       payload: ValidTourName;
+    }
+  | {
+      type: 'skip_all_tours';
     };
 
 type Tour = Record<ValidTourName, { currentStep: number; length: number; isCompleted: boolean }>;
@@ -44,6 +47,10 @@ function reducer(state: State, action: Action): State {
     if (action.type === 'skip_tour') {
       draft.tours[action.payload].isCompleted = true;
     }
+
+    if (action.type === 'skip_all_tours') {
+      draft.enabled = false;
+    }
   });
 }
 
@@ -67,9 +74,10 @@ const UnstableGuidedTourContext = ({
           };
           return acc;
         }, {} as Tour),
+        enabled,
       };
 
-  const [state, dispatch] = React.useReducer(reducer, { ...initialState, enabled });
+  const [state, dispatch] = React.useReducer(reducer, initialState);
 
   // Sync local storage
   React.useEffect(() => {
